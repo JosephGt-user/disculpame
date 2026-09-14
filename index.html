@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para Ti ❤️</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Italiana&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep: #05060f;
+    --bg-glow: #120a02;
+    --gold: #ffcf5c;
+    --gold-bright: #ffe9a8;
+    --ink: #f4efe4;
+    --ink-dim: #cabfa8;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html, body{
+    width:100%; height:100%;
+    background: var(--bg-deep);
+    overflow:hidden;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .stage{
+    position:relative;
+    width:100vw; height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /* --- star field --- */
+  #stars{
+    position:absolute; inset:0;
+    z-index:0;
+  }
+
+  /* soft ambient glow behind everything — two drifting blobs instead of a flat square wash */
+  .ambient{
+    position:absolute;
+    inset:0;
+    z-index:0;
+    overflow:hidden;
+    pointer-events:none;
+  }
+
+  .ambient::before,
+  .ambient::after{
+    content:'';
+    position:absolute;
+    width:90vmax; height:90vmax;
+    border-radius:50%;
+    background: radial-gradient(circle, rgba(255,190,80,0.16) 0%, rgba(255,170,60,0.05) 40%, rgba(5,6,15,0) 70%);
+    filter: blur(2px);
+  }
+
+  .ambient::before{
+    top:-20vmax; left:-15vmax;
+    animation: driftA 16s ease-in-out infinite;
+  }
+
+  .ambient::after{
+    bottom:-25vmax; right:-15vmax;
+    background: radial-gradient(circle, rgba(255,150,90,0.12) 0%, rgba(255,120,70,0.04) 40%, rgba(5,6,15,0) 70%);
+    animation: driftB 19s ease-in-out infinite;
+  }
+
+  @keyframes driftA{
+    0%, 100%{ transform: translate(0,0) scale(1); }
+    50%{ transform: translate(4vmax,3vmax) scale(1.08); }
+  }
+
+  @keyframes driftB{
+    0%, 100%{ transform: translate(0,0) scale(1); }
+    50%{ transform: translate(-3vmax,-4vmax) scale(1.1); }
+  }
+
+  .content{
+    position:relative;
+    z-index:2;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap: clamp(1.5rem, 4vh, 3rem);
+    padding: 2rem;
+    text-align:center;
+  }
+
+  .heart-wrap{
+    position:relative;
+    width: min(52vw, 260px);
+    height: min(52vw, 260px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .heart-wrap svg{
+    width:100%;
+    height:100%;
+    overflow:visible;
+  }
+
+  #heartPath{
+    fill: none;
+    stroke: var(--gold-bright);
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 340;
+    stroke-dashoffset: 340;
+    animation: draw 2.6s cubic-bezier(.65,0,.35,1) forwards;
+  }
+
+  #heartFill{
+    fill: var(--gold-bright);
+    opacity: 0;
+    animation: fillIn 1.4s ease-out 2.3s forwards, pulse 2.6s ease-in-out 3.9s infinite;
+  }
+
+  @keyframes draw{
+    to{ stroke-dashoffset: 0; }
+  }
+
+  @keyframes fillIn{
+    to{ opacity: 1; }
+  }
+
+  @keyframes pulse{
+    0%, 100%{ transform: scale(1); }
+    50%{ transform: scale(1.045); }
+  }
+
+  .name{
+    font-family:'Italiana', serif;
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    letter-spacing: 0.06em;
+    color: var(--ink);
+    opacity:0;
+    animation: riseIn 1.2s ease-out 0.4s forwards;
+  }
+
+  @keyframes riseIn{
+    from{ opacity:0; transform: translateY(10px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  .phrase-wrap{
+    min-height: 2.6em;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  #phrase{
+    font-size: clamp(1.15rem, 3.4vw, 1.6rem);
+    font-style: italic;
+    color: var(--ink-dim);
+    letter-spacing: 0.02em;
+    border-right: 1.5px solid var(--gold);
+    padding-right: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  footer{
+    position:absolute;
+    bottom: 2.2rem;
+    left:0; right:0;
+    text-align:center;
+    z-index:2;
+    font-family:'Italiana', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    color: rgba(244,239,228,0.35);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    #heartPath, #heartFill, .name, .ambient{ animation: none !important; }
+    #heartPath{ stroke-dashoffset: 0; }
+    #heartFill{ opacity: 1; }
+    .name{ opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <canvas id="stars"></canvas>
+  <div class="ambient"></div>
+
+  <div class="content">
+    <div class="name">Mi Amor</div>
+
+    <div class="heart-wrap">
+      <svg viewBox="0 0 100 90">
+        <defs>
+          <!-- glow filters with a wide region so the blur never gets clipped into a hard box -->
+          <filter id="glowFill" x="-150%" y="-150%" width="400%" height="400%">
+            <feDropShadow dx="0" dy="0" stdDeviation="1.6" flood-color="#ffe9a8" flood-opacity="0.95"/>
+            <feDropShadow dx="0" dy="0" stdDeviation="4.5" flood-color="#ffcf5c" flood-opacity="0.7"/>
+            <feDropShadow dx="0" dy="0" stdDeviation="9" flood-color="#ffaa28" flood-opacity="0.45"/>
+          </filter>
+          <filter id="glowStroke" x="-150%" y="-150%" width="400%" height="400%">
+            <feDropShadow dx="0" dy="0" stdDeviation="1.2" flood-color="#ffe9a8" flood-opacity="0.9"/>
+          </filter>
+          <filter id="softEdge" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="2.8"/>
+          </filter>
+          <filter id="coronaBlur" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="1.1"/>
+          </filter>
+
+          <mask id="eclipseMask" maskUnits="userSpaceOnUse" x="-20" y="-20" width="140" height="130">
+            <rect x="-20" y="-20" width="140" height="130" fill="#fff"/>
+            <!-- soft, blurred heart-shaped moon: a gentle heart eclipsing the heart -->
+            <path id="moon" fill="#000" filter="url(#softEdge)"
+              d="M50 82
+                 C 18 58, 2 38, 2 22
+                 C 2 6, 16 -2, 30 4
+                 C 40 8, 47 16, 50 24
+                 C 53 16, 60 8, 70 4
+                 C 84 -2, 98 6, 98 22
+                 C 98 38, 82 58, 50 82 Z">
+              <animateTransform attributeName="transform" type="translate"
+                values="-110,0; -110,0; 0,0; 0,0; 110,0; 110,0; -110,0"
+                keyTimes="0;0.06;0.28;0.34;0.5;0.94;1"
+                dur="9s" begin="4.2s" repeatCount="indefinite" />
+            </path>
+          </mask>
+        </defs>
+
+        <path id="heartPath" filter="url(#glowStroke)"
+          d="M50 82
+             C 18 58, 2 38, 2 22
+             C 2 6, 16 -2, 30 4
+             C 40 8, 47 16, 50 24
+             C 53 16, 60 8, 70 4
+             C 84 -2, 98 6, 98 22
+             C 98 38, 82 58, 50 82 Z" />
+        <path id="heartFill" mask="url(#eclipseMask)" filter="url(#glowFill)"
+          d="M50 82
+             C 18 58, 2 38, 2 22
+             C 2 6, 16 -2, 30 4
+             C 40 8, 47 16, 50 24
+             C 53 16, 60 8, 70 4
+             C 84 -2, 98 6, 98 22
+             C 98 38, 82 58, 50 82 Z" />
+
+        <!-- soft heart-shaped corona rim peeking around the moon's edge -->
+        <path id="coronaRing" fill="none" stroke="#ffe9a8" stroke-width="1.1" opacity="0"
+          filter="url(#coronaBlur)"
+          d="M50 82
+             C 18 58, 2 38, 2 22
+             C 2 6, 16 -2, 30 4
+             C 40 8, 47 16, 50 24
+             C 53 16, 60 8, 70 4
+             C 84 -2, 98 6, 98 22
+             C 98 38, 82 58, 50 82 Z">
+          <animateTransform attributeName="transform" type="translate"
+            values="-110,0; -110,0; 0,0; 0,0; 110,0; 110,0; -110,0"
+            keyTimes="0;0.06;0.28;0.34;0.5;0.94;1"
+            dur="9s" begin="4.2s" repeatCount="indefinite" />
+          <animate attributeName="opacity"
+            values="0;0;0.3;0.85;0.85;0.3;0;0"
+            keyTimes="0;0.06;0.2;0.28;0.34;0.42;0.5;1"
+            dur="9s" begin="4.2s" repeatCount="indefinite" />
+        </path>
+      </svg>
+    </div>
+
+    <div class="phrase-wrap">
+      <div id="phrase"></div>
+    </div>
+  </div>
+
+  <footer>PARA TI</footer>
+</div>
+
+<script>
+  // ---------- Starfield ----------
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+
+  function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    stars = [];
+    const count = Math.floor((canvas.width * canvas.height) / 6000);
+    for(let i=0;i<count;i++){
+      stars.push({
+        x: Math.random()*canvas.width,
+        y: Math.random()*canvas.height,
+        r: Math.random()*1.2 + 0.2,
+        baseAlpha: Math.random()*0.6 + 0.2,
+        phase: Math.random()*Math.PI*2,
+        speed: Math.random()*0.02 + 0.005
+      });
+    }
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function drawStars(t){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(const s of stars){
+      const a = s.baseAlpha + Math.sin(t*s.speed + s.phase)*0.25;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(255,244,220,${Math.max(0,Math.min(1,a))})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(drawStars);
+  }
+  requestAnimationFrame(drawStars);
+
+  // ---------- Typewriter phrases ----------
+  const phrases = [
+    "Te Quiero Mucho",
+    "Me Encantas",
+    "Un eclipse perfecto, como tú",
+    "Cada día te elijo a ti",
+    "Eres mi lugar favorito"
+  ];
+
+  const phraseEl = document.getElementById('phrase');
+  let pIndex = 0;
+
+  function typeLoop(){
+    const text = phrases[pIndex % phrases.length];
+    let charIndex = 0;
+    phraseEl.textContent = '';
+
+    function typeChar(){
+      if(charIndex <= text.length){
+        phraseEl.textContent = text.slice(0, charIndex);
+        charIndex++;
+        setTimeout(typeChar, 85);
+      } else {
+        setTimeout(eraseChar, 1800);
+      }
+    }
+
+    function eraseChar(){
+      if(charIndex >= 0){
+        phraseEl.textContent = text.slice(0, charIndex);
+        charIndex--;
+        setTimeout(eraseChar, 45);
+      } else {
+        pIndex++;
+        setTimeout(typeLoop, 400);
+      }
+    }
+
+    typeChar();
+  }
+
+  setTimeout(typeLoop, 3600); // start after heart animation settles
+</script>
+
+</body>
+</html>
